@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,142 +42,32 @@ import br.com.fiap.aluvery.model.Product
 import br.com.fiap.aluvery.ui.theme.AluveryTheme
 import br.com.fiap.aluvery.ui.theme.Pink80
 import br.com.fiap.aluvery.ui.theme.Purple80
+import br.com.fiap.aluvery.ui.theme.components.ProductItem
+import br.com.fiap.aluvery.ui.theme.components.ProductsSection
+import br.com.fiap.aluvery.ui.theme.screens.HomeScreen
 import java.math.BigDecimal
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AluveryTheme {
-                // A surface container using the 'background' color from the theme
-                Surface {
-                    ProductsSection()
-                }
-            }
+            App()
         }
     }
 }
 
 @Composable
-fun ProductItem(product: Product) {
-    Surface(
-        shape = RoundedCornerShape(16.dp),
-        shadowElevation = 4.dp,
-    ) {
-        Column(
-            Modifier
-                .heightIn(250.dp, 300.dp)
-                .width(200.dp)
-        ) {
-            val imageSize = 100.dp
-            Box(
-                modifier = Modifier
-                    .height(imageSize)
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                Purple80,
-                                Pink80
-                            )
-                        )
-                    )
-                    .fillMaxWidth()
-
-            ) {
-                Image(
-                    painter = painterResource(id = product.image),
-                    contentDescription = "acessibilidade",
-                    Modifier
-                        .size(imageSize)
-                        .offset(y = imageSize / 2)
-                        .clip(CircleShape)
-                        .align(BottomCenter),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Column(
-                Modifier.padding(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(imageSize / 2))
-                Text(
-                    text = product.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight(700),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = product.price.toBrazilianCurrency(),
-                    Modifier.padding(top = 8.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight(400)
-                )
-            }
-
-        }
-
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProductItemPreview() {
-    ProductItem(
-        Product(
-            name = "Produto 1",
-            price = BigDecimal(100),
-            image = R.drawable.ic_launcher_background
-        )
-    )
-}
-
-@Composable
-fun ProductsSection() {
-    Column {
-        Text(
-            text = "Promoções",
-            Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
-            fontSize = 20.sp,
-            fontWeight = FontWeight(400)
-        )
-        Row(
-            Modifier
-                .padding(
-                    top = 8.dp,
-                    bottom = 16.dp
-                )
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            ProductItem(
-                product = Product(
-                    name = "Hambúrguer",
-                    price = BigDecimal("25.00"),
-                    image = R.drawable.burger
-                )
-            )
-            ProductItem(
-                product = Product(
-                    name = "Fritas",
-                    price = BigDecimal("10.00"),
-                    image = R.drawable.fries
-                )
-            )
-            ProductItem(
-                product = Product(
-                    name = "Pizza",
-                    price = BigDecimal("35.00"),
-                    image = R.drawable.pizza
-                )
-            )
+fun App() {
+    AluveryTheme {
+        // A surface container using the 'background' color from the theme
+        Surface {
+            HomeScreen()
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun ProductsSectionPreview() {
-    ProductsSection()
+fun AppPreview() {
+    App()
 }
