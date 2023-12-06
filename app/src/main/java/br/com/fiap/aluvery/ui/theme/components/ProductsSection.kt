@@ -3,10 +3,15 @@ package br.com.fiap.aluvery.ui.theme.components
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.fiap.aluvery.R
 import br.com.fiap.aluvery.model.Product
+import br.com.fiap.aluvery.sampledata.sampleProducts
+import br.com.fiap.aluvery.ui.theme.AluveryTheme
 import java.math.BigDecimal
 
 @Composable
@@ -30,19 +37,22 @@ fun ProductsSection(
             fontSize = 20.sp,
             fontWeight = FontWeight(400)
         )
-        Row(
+        LazyRow(
             Modifier
                 .padding(
                     top = 8.dp,
                 )
                 .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            for (p in products) {
+
+            items(products) { p ->
                 ProductItem(product = p)
             }
+
+
         }
     }
 }
@@ -50,25 +60,10 @@ fun ProductsSection(
 @Preview(showBackground = true)
 @Composable
 fun ProductsSectionPreview() {
-    ProductsSection("Promoções", products = sampleProducts)
-
+    AluveryTheme {
+        Surface {
+            ProductsSection("Promoções", products = sampleProducts)
+        }
+    }
 
 }
-
-val sampleProducts = listOf(
-    Product(
-        name = "Hambúrguer",
-        price = BigDecimal("25.00"),
-        image = R.drawable.burger
-    ),
-    Product(
-        name = "Fritas",
-        price = BigDecimal("10.00"),
-        image = R.drawable.fries
-    ),
-    Product(
-        name = "Pizza",
-        price = BigDecimal("35.00"),
-        image = R.drawable.pizza
-    )
-)
