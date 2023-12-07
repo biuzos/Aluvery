@@ -40,8 +40,12 @@ import coil.compose.AsyncImagePainter.State.Empty.painter
 import java.math.BigDecimal
 
 @Composable
-fun ProductItem(product: Product) {
+fun ProductItem(
+    product: Product,
+    modifier: Modifier = Modifier
+) {
     Surface(
+        modifier,
         shape = RoundedCornerShape(16.dp),
         shadowElevation = 4.dp,
     ) {
