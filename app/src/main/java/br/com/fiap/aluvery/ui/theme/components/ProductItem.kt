@@ -76,19 +76,6 @@ fun ProductItem(product: Product) {
                         .align(Alignment.BottomCenter),
                     contentScale = ContentScale.Crop,
                 )
-//                AsyncImage(
-//                    model = "https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg",
-//                    contentDescription = null,
-//                    Modifier
-//                        .fillMaxSize()
-//                        .size(imageSize)
-//                        .offset(y = imageSize / 2)
-//                        .clip(CircleShape)
-//                        .align(Alignment.BottomCenter),
-//
-//                    contentScale = ContentScale.Crop
-//
-//                )
             }
             Column(
                 Modifier.padding(16.dp)
