@@ -18,11 +18,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import br.com.fiap.aluvery.dao.ProductDao
+import br.com.fiap.aluvery.sampledata.sampleCandies
+import br.com.fiap.aluvery.sampledata.sampleDrinks
 import br.com.fiap.aluvery.sampledata.sampleSections
 import br.com.fiap.aluvery.ui.theme.AluveryTheme
 import br.com.fiap.aluvery.ui.theme.screens.HomeScreen
 
 class MainActivity : ComponentActivity() {
+
+    private val dao = ProductDao()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -33,14 +38,26 @@ class MainActivity : ComponentActivity() {
                         ProductFormActivity::class.java
                     )
                 )
-            })
+            }) {
+
+                val sections = mapOf(
+                    "Todos produtos" to dao.products(),
+                    "Promoções" to sampleDrinks + sampleCandies,
+                    "Doces" to sampleCandies,
+                    "Bebidas" to sampleDrinks
+                )
+                HomeScreen(sections = sections)
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(onFabClick: () -> Unit = {}) {
+fun App(
+    onFabClick: () -> Unit = {},
+    content: @Composable () -> Unit = {}
+) {
     AluveryTheme {
         // A surface container using the 'background' color from the theme
         Surface {
@@ -50,7 +67,7 @@ fun App(onFabClick: () -> Unit = {}) {
                 }
             }) { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
-                    HomeScreen(sampleSections)
+                    content()
                 }
             }
         }
