@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -89,6 +90,10 @@ fun HomeScreen(
 
 
         }
+//        FloatingActionButton(onClick =, shape = RoundedCornerShape(100)) {
+//            Icon(imageVector = Icons.Default.Search, contentDescription = "ícone de busca")
+//
+//        }
     }
 
 }
