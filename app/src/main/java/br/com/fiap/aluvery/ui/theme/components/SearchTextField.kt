@@ -15,7 +15,10 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTextField(searchText: String, onSearchChange: (String) -> Unit) {
+fun SearchTextField(
+    searchText: String,
+    onSearchChange: (String) -> Unit
+) {
 //    var text by remember { mutableStateOf(searchText) }
 
     OutlinedTextField(
