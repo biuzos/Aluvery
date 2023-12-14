@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +41,7 @@ import br.com.fiap.aluvery.R
 import br.com.fiap.aluvery.dao.ProductDao
 import br.com.fiap.aluvery.model.Product
 import br.com.fiap.aluvery.ui.theme.AluveryTheme
+import br.com.fiap.aluvery.ui.theme.screens.ProductFormScreen
 import coil.compose.AsyncImage
 import java.lang.IllegalArgumentException
 import java.lang.NumberFormatException
@@ -65,146 +67,3 @@ class ProductFormActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProductFormScreen(
-    onSaveClick: (Product) -> Unit = {}
-) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = spacedBy(16.dp)
-    ) {
-        Spacer(modifier = Modifier)
-        Text(
-            text = "Criando o produto",
-            Modifier
-                .fillMaxWidth(),
-            fontSize = 28.sp
-        )
-        var url by remember {
-            mutableStateOf("")
-        }
-        if (url.isNotBlank()) {
-            AsyncImage(
-                model = url, contentDescription = null,
-                Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                error = painterResource(id = R.drawable.ic_launcher_background)
-            )
-        }
-
-        TextField(
-            value = url, onValueChange = {
-                url = it
-            }, Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(text = "URL da imagem")
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Next
-            )
-        )
-        var name by remember {
-            mutableStateOf("")
-        }
-        TextField(
-            value = name, onValueChange = {
-                name = it
-            }, Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(text = "Nome")
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next,
-                capitalization = KeyboardCapitalization.Words
-            )
-        )
-        var price by remember {
-            mutableStateOf("")
-        }
-        val formater = remember {
-            DecimalFormat("#.##")
-        }
-        TextField(
-            value = price, onValueChange = {
-                try {
-                    price = formater.format(BigDecimal(it))
-                } catch (e: IllegalArgumentException) {
-                    if (it.isBlank()) {
-                        price = it
-                    }
-                }
-            }, Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(text = "Preço")
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            )
-        )
-        var description by remember {
-            mutableStateOf("")
-        }
-        TextField(
-            value = description, onValueChange = {
-                description = it
-            }, Modifier
-                .fillMaxWidth()
-                .heightIn(min = 100.dp),
-            label = {
-                Text(text = "Descrição")
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                capitalization = KeyboardCapitalization.Sentences
-            ),
-            placeholder = {
-                Text(text = "Descrição do produto")
-            }
-        )
-        Button(
-            onClick = {
-                val convertedPrice = try {
-                    BigDecimal(price)
-                } catch (e: NumberFormatException) {
-                    BigDecimal.ZERO
-                }
-                val product = Product(
-                    name = name,
-                    image = url,
-                    price = convertedPrice,
-                    description = description
-                )
-                Log.i("ProductForm", "Product: $product")
-                onSaveClick(product)
-
-            }, Modifier
-                .fillMaxWidth()
-        ) {
-            Text(text = "Salvar")
-        }
-        Spacer(modifier = Modifier)
-    }
-}
-
-@Preview()
-@Composable
-fun ProductFormScreenPreview() {
-    AluveryTheme {
-        Surface {
-            ProductFormScreen()
-        }
-    }
-}
