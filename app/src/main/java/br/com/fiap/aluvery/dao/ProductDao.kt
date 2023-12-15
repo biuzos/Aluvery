@@ -1,16 +1,20 @@
 package br.com.fiap.aluvery.dao
 
-import androidx.compose.runtime.mutableStateListOf
 import br.com.fiap.aluvery.model.Product
-import br.com.fiap.aluvery.sampledata.sampleProducts
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.toList
 
 class ProductDao {
     companion object {
-        private val products = mutableStateListOf<Product>(*sampleProducts.toTypedArray())
+        private val products = MutableStateFlow<List<Product>>(emptyList())
     }
 
-    fun products() = products.toList()
+     fun products() = products.asStateFlow()
+
+
     fun save(product: Product) {
-        products.add(product)
+        products.value = products.value + product
     }
 }

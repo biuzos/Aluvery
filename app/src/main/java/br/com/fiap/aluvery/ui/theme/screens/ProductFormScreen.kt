@@ -17,11 +17,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -34,34 +31,38 @@ import androidx.compose.ui.unit.sp
 import br.com.fiap.aluvery.R
 import br.com.fiap.aluvery.model.Product
 import br.com.fiap.aluvery.ui.theme.AluveryTheme
+import br.com.fiap.aluvery.ui.theme.states.ProductFormUiState
+import br.com.fiap.aluvery.ui.theme.viewmodels.ProductFormScreenViewModel
 import coil.compose.AsyncImage
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
-import java.math.BigDecimal
-import java.text.DecimalFormat
+
 
 @Composable
 fun ProductFormScreen(
-    onSaveClick: (Product) -> Unit = {}
+    viewModel: ProductFormScreenViewModel,
+    onSaveClick: () -> Unit = {}
 ) {
-    var url by rememberSaveable {
-        mutableStateOf("")
-    }
 
-    var name by rememberSaveable {
-        mutableStateOf("")
-    }
+    val state by viewModel.uiState.collectAsState()
 
-    var price by rememberSaveable {
-        mutableStateOf("")
-    }
-    val formater = remember {
-        DecimalFormat("#.##")
-    }
+    ProductFormScreen(
+        state = state,
+        onSaveClick = {
+            viewModel.saveProduct()
+            onSaveClick()
+        }
+    )
+}
 
-    var description by rememberSaveable {
-        mutableStateOf("")
-    }
+@Composable
+fun ProductFormScreen(
+    state: ProductFormUiState = ProductFormUiState(),
+    onSaveClick: () -> Unit = {}
+) {
+    val url = state.url
+    val name = state.name
+    val price = state.price
+    val description = state.description
+
     Column(
         Modifier
             .fillMaxSize()
@@ -90,9 +91,9 @@ fun ProductFormScreen(
         }
 
         TextField(
-            value = url, onValueChange = {
-                url = it
-            }, Modifier
+            value = url,
+            onValueChange = state.onUrlChange,
+            Modifier
                 .fillMaxWidth(),
             label = {
                 Text(text = "URL da imagem")
@@ -104,9 +105,9 @@ fun ProductFormScreen(
         )
 
         TextField(
-            value = name, onValueChange = {
-                name = it
-            }, Modifier
+            value = name,
+            onValueChange = state.onNameChange,
+            Modifier
                 .fillMaxWidth(),
             label = {
                 Text(text = "Nome")
@@ -119,15 +120,7 @@ fun ProductFormScreen(
         )
 
         TextField(
-            value = price, onValueChange = {
-                try {
-                    price = formater.format(BigDecimal(it))
-                } catch (e: IllegalArgumentException) {
-                    if (it.isBlank()) {
-                        price = it
-                    }
-                }
-            }, Modifier
+            value = price, onValueChange = state.onPriceChange, Modifier
                 .fillMaxWidth(),
             label = {
                 Text(text = "Preço")
@@ -139,9 +132,9 @@ fun ProductFormScreen(
         )
 
         TextField(
-            value = description, onValueChange = {
-                description = it
-            }, Modifier
+            value = description,
+            onValueChange = state.onDescriptionChange,
+            Modifier
                 .fillMaxWidth()
                 .heightIn(min = 100.dp),
             label = {
@@ -156,22 +149,8 @@ fun ProductFormScreen(
             }
         )
         Button(
-            onClick = {
-                val convertedPrice = try {
-                    BigDecimal(price)
-                } catch (e: NumberFormatException) {
-                    BigDecimal.ZERO
-                }
-                val product = Product(
-                    name = name,
-                    image = url,
-                    price = convertedPrice,
-                    description = description
-                )
-                Log.i("ProductForm", "Product: $product")
-                onSaveClick(product)
-
-            }, Modifier
+            onClick = onSaveClick
+            , Modifier
                 .fillMaxWidth()
         ) {
             Text(text = "Salvar")
@@ -179,6 +158,7 @@ fun ProductFormScreen(
         Spacer(modifier = Modifier)
     }
 }
+
 
 @Preview()
 @Composable

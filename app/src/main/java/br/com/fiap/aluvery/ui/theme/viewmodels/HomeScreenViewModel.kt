@@ -1,40 +1,55 @@
 package br.com.fiap.aluvery.ui.theme.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import br.com.fiap.aluvery.dao.ProductDao
 import br.com.fiap.aluvery.model.Product
 import br.com.fiap.aluvery.sampledata.sampleCandies
 import br.com.fiap.aluvery.sampledata.sampleDrinks
 import br.com.fiap.aluvery.sampledata.sampleProducts
 import br.com.fiap.aluvery.ui.theme.states.HomeScreenUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class HomeScreenViewModel : ViewModel() {
 
     private val dao = ProductDao()
 
 
-    var uiState: HomeScreenUiState by mutableStateOf(
-        HomeScreenUiState(
-            sections = mapOf(
-                "Todos produtos" to dao.products(),
-                "Promoções" to sampleDrinks + sampleCandies,
-                "Doces" to sampleCandies,
-                "Bebidas" to sampleDrinks
-            ),
-            onSearchChange = {
-                uiState = uiState.copy(
+    private val _uiState: MutableStateFlow<HomeScreenUiState> = MutableStateFlow(
+        HomeScreenUiState()
+    )
+    val uiState get() = _uiState.asStateFlow()
 
-                    searchText = it,
-                    searchedProducts = searchedProducts(it)
+    init {
+        _uiState.update { currentState ->
+            currentState.copy(
+                onSearchChange = { text ->
+                    _uiState.value = _uiState.value.copy(
+                        searchText = text,
+                        searchedProducts = searchedProducts(text)
+                    )
+                }
+            )
+
+        }
+        viewModelScope.launch {
+            dao.products().collect { products ->
+                _uiState.value = _uiState.value.copy(
+                    sections = mapOf(
+                        "Todos produtos" to products,
+                        "Promoções" to sampleDrinks + sampleCandies,
+                        "Doces" to sampleCandies,
+                        "Bebidas" to sampleDrinks
+                    ),
+                    searchedProducts = searchedProducts(_uiState.value.searchText)
                 )
             }
-        ))
-        private set
+        }
 
+    }
 
     private fun containsInNameOrDescription(text: String) = { product: Product ->
         product.name.contains(
@@ -51,6 +66,7 @@ class HomeScreenViewModel : ViewModel() {
         sampleProducts.filter(
             containsInNameOrDescription(text)
         ) +
-                dao.products().filter(containsInNameOrDescription(text))
+                dao.products().value.filter(containsInNameOrDescription(text))
     } else emptyList()
+
 }
